@@ -100,7 +100,6 @@ void StartTask02(void const * argument)
 			}
 			else if(rc_ctrl.rc.s[0]==3)
 			{
-				//Set_zero_pos();
 				Arm_control();
 			}
 			else if(rc_ctrl.rc.s[0]==2)
@@ -108,9 +107,12 @@ void StartTask02(void const * argument)
 				Vision_control();
 			}
 			
-			uint8_t s='a';
-			
-			HAL_UART_Transmit_IT(&huart2,&s,1);
+			float send_data[4];
+			send_data[0]=MOTOR1_can1.position;
+			send_data[1]=MOTOR1_can2.position;
+			send_data[2]=MOTOR2_can2.position;
+			send_data[3]=MOTOR3_can2.position;
+			HAL_UART_Transmit(&huart2,(uint8_t*)send_data,16,HAL_MAX_DELAY);
 			
 			osDelay(1);
 			
@@ -222,12 +224,12 @@ static void Arm_control()
 
 static void Sucker_Init()
 {
-	HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_2);//启动定时器1的PWM通道
-	__HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_2,2000);
+	HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_3);//启动定时器8的PWM通道
+	__HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,2000);
 	HAL_Delay(2000);
-	HAL_TIM_PWM_Stop(&htim3,TIM_CHANNEL_2);
-	__HAL_TIM_SET_COMPARE(&htim3,TIM_CHANNEL_2,1000);
-	HAL_TIM_PWM_Start(&htim3,TIM_CHANNEL_2);
+	HAL_TIM_PWM_Stop(&htim8,TIM_CHANNEL_3);
+	__HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_3,1000);
+	HAL_TIM_PWM_Start(&htim8,TIM_CHANNEL_3);
 }
 
 static void As5600_control()
@@ -339,11 +341,11 @@ void dji_motor_get()
 
 	if(rc_ctrl.rc.s[1]==1)
 	{
-	 __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,2000); 
+	 __HAL_TIM_SetCompare(&htim8,TIM_CHANNEL_3,2000); 
 	}
 	if(rc_ctrl.rc.s[1]==3)
 	{
-	 __HAL_TIM_SetCompare(&htim3,TIM_CHANNEL_1,1000); 
+	 __HAL_TIM_SetCompare(&htim8,TIM_CHANNEL_3,1000); 
 	} 
 }
 
